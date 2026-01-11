@@ -11,7 +11,7 @@ class MoodLog < ApplicationRecord
   belongs_to :feeling, optional: true
 
   # --- バリデーション ---
-  validates :user_id, :mood_id, :recorded_at, presence: true
+  validates :recorded_at, presence: true
   # selfで囲うことでundefinedエラーを防止(nilを返す)
   validates :timing, presence: true, if: -> { self[:habit_log_id].present? }
 
