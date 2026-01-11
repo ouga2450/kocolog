@@ -17,6 +17,7 @@ class ReactionContext
 
   def build
     build_mood_logs
+    build_habit_logs
     build_mood_graph
     build_habits
     build_avg_mood
@@ -27,6 +28,14 @@ class ReactionContext
     @mood_logs =
       @user.mood_logs
            .includes(:mood)
+           .for_date(@date)
+           .recent
+  end
+
+  def build_habit_logs
+    @habit_logs =
+      @user.habit_logs
+           .includes(habit: [ :goal, :category ])
            .for_date(@date)
            .recent
   end
@@ -61,7 +70,7 @@ class ReactionContext
   def build_summaries
     frequency = %i[daily weekly monthly]
 
-    # ① 期間ごとのログを一括取得
+    # 期間ごとのログを一括取得
     logs_by_frequency =
       frequency.index_with do |freq|
         HabitLogsQuery.new(
@@ -73,12 +82,13 @@ class ReactionContext
           .group_by(&:habit_id)
       end
 
-    # ② Progress を組み立てる
+    # Progress を組み立てる
     @summaries =
       frequency.index_with do |freq|
         frequency_habits = @habits.public_send(freq) || Habit.none
         logs_by_habit = logs_by_frequency[freq]
 
+        #
         progresses =
           frequency_habits.map do |habit|
             HabitProgress.new(
