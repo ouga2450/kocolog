@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_06_100654) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_11_133000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -80,7 +80,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_06_100654) do
     t.bigint "mood_id", null: false
     t.datetime "recorded_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.bigint "feeling_id"
-    t.string "timing"
+    t.integer "timing"
     t.text "note"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -75,7 +75,7 @@ class HabitLogForm
       habit_id: habit.id,
       goal_id: habit.goal&.id,
       performed_value: default_performed_value,
-      started_at: Time.current,
+      started_at: 30.minutes.ago,
       before_mood_id: default_mood,
       ended_at: Time.current,
       after_mood_id: default_mood
