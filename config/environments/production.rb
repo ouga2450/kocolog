@@ -78,22 +78,13 @@ Rails.application.configure do
   # caching is enabled.
   config.action_mailer.perform_caching = false
 
-  # === Action Mailer (Gmail SMTP) ===
-  config.action_mailer.delivery_method = :smtp
-
-  config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
-    port: 587,
-    user_name: ENV["GMAIL_USERNAME"],
-    password: ENV["GMAIL_APP_PASSWORD"],
-    authentication: "plain",
-    enable_starttls_auto: true
-  }
+  # === Action Mailer (Resend) ===
+  config.action_mailer.delivery_method = :resend
 
   config.action_mailer.default_url_options = {
-  host: "kocolog.com",
-  protocol: "https"
-}
+    host: "kocolog.com",
+    protocol: "https"
+  }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
@@ -115,6 +106,7 @@ Rails.application.configure do
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts << "kocolog.com"      # 独自ドメイン
   config.hosts << "www.kocolog.com"  # サブドメイン
+  config.hosts << "kokolog.onrender.com"      # 旧ドメイン
 
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
