@@ -7,9 +7,20 @@ class Users::PasswordsController < Devise::PasswordsController
   # end
 
   # POST /resource/password
-  # def create
-  #   super
-  # end
+  def create
+    email = resource_params[:email].to_s.strip
+
+    if email.present?
+      user = resource_class.find_by(email: email)
+      if user&.provider == "google_oauth2"
+        self.resource = resource_class.new(email: email)
+        resource.errors.add(:base, I18n.t("devise.passwords.google_oauth2"))
+        return render :new, status: :unprocessable_entity
+      end
+    end
+
+    super
+  end
 
   # GET /resource/password/edit?reset_password_token=abcdef
   # def edit

@@ -1,45 +1,73 @@
-<div class="min-h-screen flex items-center justify-center bg-base-200">
-  <div class="card bg-base-100 shadow-xl w-full max-w-sm">
-    <div class="card-body space-y-4">
-      <h2 class="text-xl font-bold text-center">パスワード再設定</h2>
+<div class="flex items-center justify-center px-4">
+  <div class="card bg-base-100 w-full max-w-sm rounded-xl shadow-lg border border-base-300/40">
+    <div class="card-body space-y-8 px-6 py-8">
 
+      <!-- タイトル -->
+      <h2 class="text-xl font-bold text-center text-base-content">
+        パスワード再設定
+      </h2>
+
+      <p class="text-center text-xs text-base-content/70">
+        登録したメールアドレスに再設定用のリンクを送ります。
+      </p>
+
+      <!-- フォーム -->
       <%= form_with model: resource,
                     as: resource_name,
                     url: password_path(resource_name),
                     local: true,
-                    html: { class: "space-y-3" } do |f| %>
-        <%= f.hidden_field :reset_password_token %>
+                    html: { class: "grid gap-y-6" } do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
 
-        <!-- 新しいパスワード -->
-        <label class="form-control w-full">
-          <div class="label">
-            <span class="label-text text-xs font-medium">新しいパスワード</span>
-          </div>
-          <%= f.password_field :password,
-                               class: "input input-bordered w-full",
-                               required: true %>
-        </label>
+        <div class="form-control gap-2">
+          <%= f.label :email, "メールアドレス",
+                class: "label-text text-xs font-semibold text-base-content/80" %>
 
-        <!-- パスワード確認 -->
-        <label class="form-control w-full">
-          <div class="label">
-            <span class="label-text text-xs font-medium">パスワード確認</span>
-          </div>
-          <%= f.password_field :password_confirmation,
-                               class: "input input-bordered w-full",
-                               required: true %>
-        </label>
-
-        <div class="form-control mt-4">
-          <%= f.button type: "submit",
-                       class: "btn btn-primary w-full text-sm flex items-center justify-center gap-2" do %>
-            <%= heroicon "check", options: { class: "w-4 h-4" } %>
-            <span>パスワードを変更</span>
-          <% end %>
+          <%= f.email_field :email,
+                autofocus: true,
+                placeholder: "name@example.com",
+                class: "input input-bordered w-full rounded-lg",
+                required: true %>
         </div>
+
+        <%= f.button type: "submit",
+              class: "btn btn-primary w-full h-11 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md shadow-primary/20" do %>
+          <%= heroicon "check", options: { class: "w-4 h-4" } %>
+          再設定メールを送信
+        <% end %>
       <% end %>
+
+      <!-- 区切り -->
+      <div class="flex items-center gap-4 opacity-70">
+        <div class="flex-1 h-px bg-base-300"></div>
+        <span class="text-xs">または</span>
+        <div class="flex-1 h-px bg-base-300"></div>
+      </div>
+
+      <!-- ログイン -->
+      <p class="btn btn-primary w-full h-11 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-md shadow-primary/20">
+        <%= heroicon "key", options: { class: "w-4 h-4" } %>
+        <%= link_to t("actions.login"), new_user_session_path %>
+      </p>
+
+      <!-- Googleログイン（視認性 & 統一トーン） -->
+      <%= button_to user_google_oauth2_omniauth_authorize_path,
+            method: :post,
+            data: { turbo: false },
+            class: "w-full h-11 rounded-lg bg-base-100 border border-base-300 hover:bg-base-200 transition flex items-center justify-center gap-3 text-sm text-base-content font-medium" do %>
+
+        <span class="w-5 h-5 flex items-center justify-center">
+          <svg class="w-5 h-5" viewBox="0 0 48 48" aria-hidden="true">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.69 1.22 9.18 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.63 0 6.51 5.38 2.56 13.22l7.98 6.2C12.7 13.25 17.9 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.5 24.5c0-1.54-.14-3.02-.39-4.45H24v8.46h12.7c-.55 2.82-2.23 5.2-4.75 6.81l7.3 5.66C43.93 37.92 46.5 31.83 46.5 24.5z"/>
+            <path fill="#FBBC05" d="M10.54 28.02a14.5 14.5 0 0 1-.76-4.52c0-1.57.28-3.1.76-4.52l-7.98-6.2A23.9 23.9 0 0 0 0 23.5c0 3.8.9 7.4 2.48 10.6l8.06-6.08z"/>
+            <path fill="#34A853" d="M24 47c6.48 0 11.93-2.14 15.9-5.82l-7.3-5.66c-2.03 1.37-4.64 2.17-8.6 2.17-6.1 0-11.3-3.75-13.46-9.02l-8.06 6.08C6.51 42.62 14.63 48 24 48z"/>
+          </svg>
+        </span>
+
+        <span><%= t("actions.sign_in_with_google") %></span>
+      <% end %>
+
     </div>
   </div>
 </div>
-
-<%= render "devise/shared/links" %>

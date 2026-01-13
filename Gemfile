@@ -38,6 +38,8 @@ gem "rails-i18n"
 
 gem "hashid-rails", "~> 1.0"
 
+gem "config"
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
@@ -66,6 +68,7 @@ group :development do
   gem "pry"
   gem "pry-rails"
   gem "bullet"
+  gem "letter_opener_web"
 end
 
 group :test do

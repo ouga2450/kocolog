@@ -11,6 +11,13 @@ ja:
         success: "%{kind}アカウントでログインしました。"
         failure: "%{kind}アカウントでの認証に失敗しました。"
 
+    passwords:
+      google_oauth2: "Googleで登録したアカウントはパスワード再設定できません。Googleログインをご利用ください。"
+
     failure:
       user:
         not_found_in_database: "メールアドレスまたはパスワードが正しくありません。"
+
+    mailer:
+      reset_password_instructions:
+        subject: "【kocolog】パスワード再設定のご案内"
