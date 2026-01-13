@@ -31,7 +31,7 @@ RSpec.describe HabitLogForm, type: :model do
     end
 
     it "overrides defaults with provided attributes" do
-      form = build_form(attrs: { performed_value: 5, before_note: "note" })
+      form = build_form({ performed_value: 5, before_note: "note" })
 
       expect(form.performed_value).to eq(5)
       expect(form.before_note).to eq("note")
