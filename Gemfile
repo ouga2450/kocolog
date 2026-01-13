@@ -28,6 +28,9 @@ gem "cssbundling-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# mailer
+gem "resend"
+
 # 🔐 Authentication
 gem "devise", "~> 4.9"
 gem "devise-i18n"
