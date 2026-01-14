@@ -12,9 +12,9 @@ class HabitQuery
     @active_base ||= begin
       Habit
         .where(user: @user, archived_at: nil)
-        .joins(:goal)
+        .joins(:goal, :category)
         .merge(Goal.active.effective_on(@date))
-        .includes(:goal)
+        .includes(:goal, :category)
         .distinct
         .to_a
     end

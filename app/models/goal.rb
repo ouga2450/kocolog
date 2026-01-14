@@ -18,10 +18,7 @@ class Goal < ApplicationRecord
   validates :amount, presence: true
 
   # count / time の場合だけ amount が必要
-  validates :amount,
-    numericality: { greater_than: 0 },
-    if: -> { goal_unit.in?(%w[count_based time_based]) }
-
+  validates :amount, numericality: { greater_than: 0 }
   validate :start_date_must_be_before_end_date
 
   # --- scope ---
