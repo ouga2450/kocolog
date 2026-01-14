@@ -33,8 +33,11 @@ class HabitForm
   validates :goal_unit, :frequency, presence: true
   validates :status, presence: true
 
-  # amount は 1以上
-  validates :amount, numericality: { greater_than: 0 }
+  # amount は count / time の場合だけ1以上
+  # check_based の場合は後から自動設定
+  validates :amount,
+  numericality: { greater_than: 0 },
+  if: -> { goal_unit.in?(%w[count_based time_based]) }
 
   # 日付チェック
   validate :start_date_must_be_before_end_date
