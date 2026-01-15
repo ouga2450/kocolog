@@ -19,7 +19,7 @@ class TimeSeriesAggregation
     {
       unit: unit,
       label_format: label_format_for(unit),
-      points: format_points(data),
+      points: format_points(data)
     }
   end
 
