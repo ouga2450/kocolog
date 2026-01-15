@@ -1,6 +1,7 @@
 class TimeSeriesAggregation
-  def initialize(scope)
+  def initialize(scope, force_unit: nil)
     @scope = scope
+    @force_unit = force_unit
   end
 
   # 返り値: { time => average_score, ... }
@@ -8,13 +9,17 @@ class TimeSeriesAggregation
     from = @scope.minimum(:recorded_at)
     to   = @scope.maximum(:recorded_at)
 
-    return { unit: :hour, points: [] } if from.nil? || to.nil?
+    return empty_result if from.nil? || to.nil?
 
     @from = from
-    unit = decide_unit(from, to)
+    unit = @force_unit || decide_unit(from, to)
     data = aggregate(unit)
 
-    { unit: unit, points: format_points(data) }
+    {
+      unit: unit,
+      label_format: label_format_for(unit),
+      points: format_points(data)
+    }
   end
 
   private
@@ -70,6 +75,31 @@ class TimeSeriesAggregation
       .transform_values do |bucket_logs|
         bucket_logs.sum { |log| log.mood.score } / bucket_logs.size.to_f
       end
+  end
+
+  def empty_result
+    {
+      unit: :none,
+      label_format: nil,
+      points: []
+    }
+  end
+
+  def label_format_for(unit)
+    case unit
+    when :quarter_hour, :half_hour
+      "%H:%M"
+    when :hour
+      "%m/%d %H時"
+    when :day
+      "%m/%d"
+    when :three_days
+      "%m/%d"
+    when :week
+      "週 (%m/%d〜)"
+    when :month
+      "%Y/%m"
+    end
   end
 
   # グラフ描画用のハッシュ配列に変換
