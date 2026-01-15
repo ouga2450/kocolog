@@ -1,5 +1,5 @@
 <div class="min-h-screen flex items-center justify-center bg-base-200 px-4">
-  <div class="card bg-base-100 w-full max-w-sm rounded-xl shadow-lg border border-base-300/40">
+  <div class="card bg-base-100/80 backdrop-blur-sm w-full max-w-sm rounded-xl shadow-lg border border-base-300/40">
     <div class="card-body space-y-8 px-6 py-8">
 
       <!-- タイトル -->
@@ -75,7 +75,7 @@
       <%= button_to user_google_oauth2_omniauth_authorize_path,
             method: :post,
             data: { turbo: false },
-            class: "w-full h-11 rounded-lg bg-base-100 border border-base-300 hover:bg-base-200 transition flex items-center justify-center gap-3 text-sm text-base-content font-medium" do %>
+            class: "w-full h-11 rounded-lg bg-base-100/80 backdrop-blur-sm border border-base-300 hover:bg-base-200 transition flex items-center justify-center gap-3 text-sm text-base-content font-medium" do %>
 
         <!-- アイコン -->
         <span class="w-5 h-5 flex items-center justify-center">
