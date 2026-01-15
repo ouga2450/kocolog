@@ -6,7 +6,7 @@ class HomeController < ApplicationController
     habit_logs =
       current_user.habit_logs
         .for_today
-        .includes(:habit)
+        .includes(habit: :category)
 
     mood_logs =
       current_user.mood_logs
