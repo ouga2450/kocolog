@@ -1,4 +1,4 @@
-<div class="card bg-base-100 shadow-sm border-l-2 border-primary/60">
+<div class="card bg-base-100/80 backdrop-blur-sm shadow-sm border-l-2 border-primary/60">
   <div class="card-body p-5 space-y-3">
 
     <!-- ヘッダー -->
@@ -30,7 +30,9 @@
     <div
       class="w-full h-40"
       data-controller="mood-graph"
-      data-mood-graph-values-value="<%= @context.mood_graph_values.to_json %>">
+      data-mood-graph-values-value="<%= @context.mood_graph[:points].to_json %>"
+      data-mood-graph-unit-value="<%= @context.mood_graph[:unit] %>"
+    >
 
       <canvas class="w-full h-full"></canvas>
     </div>

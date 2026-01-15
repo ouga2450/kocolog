@@ -10,13 +10,15 @@ function themeColor(variable) {
 
 export default class extends Controller {
   static values = {
-    values: Array
+    values: Array,
+    unit: String
   }
 
   connect() {
     if (!this.valuesValue || this.valuesValue.length === 0) return
 
     const canvas = this.element.querySelector("canvas")
+    const time = this.timeConfig()
 
     // テーマカラー取得
     const primary     = themeColor("--color-primary")
@@ -29,11 +31,17 @@ export default class extends Controller {
     // 時系列データ
     const data = this.valuesValue
       .map((v) => {
-        const time = v?.time ?? v?.[0]
+        const rawTime = v?.time ?? v?.[0]
         const value = v?.value ?? v?.[1]
-        if (time == null || value == null) return null
+        if (rawTime == null || value == null) return null
 
-        return { x: new Date(time), y: value }
+        const rounded = this.roundTime(
+          rawTime,
+          time.unit,
+          time.stepSize
+        )
+
+        return { x: rounded, y: value }
       })
       .filter(Boolean)
 
@@ -43,21 +51,41 @@ export default class extends Controller {
         datasets: [
           {
             data,
+
+            // 線
             borderColor: primary,
-            backgroundColor: "transparent",
             borderWidth: 2,
-            tension: 0.35,
-            pointRadius: 3,
-            pointBackgroundColor: primary,
-            pointBorderColor: base200,
+            tension: 0.4,
+
+            fill: true,
+            backgroundColor: (context) => {
+              const chart = context.chart
+              const { ctx, chartArea } = chart
+              if (!chartArea) return null
+
+              const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+              gradient.addColorStop(0, `${primary}33`)
+              gradient.addColorStop(1, `${primary}00`)
+              return gradient
+            },
+
+            pointRadius: 0,
             pointHoverRadius: 5,
-            pointHoverBackgroundColor: accent
+            pointHitRadius: 12,
+            pointBackgroundColor: accent,
+            pointBorderColor: base200,
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+
+        interaction: {
+          mode: "nearest",
+          intersect: false
+        },
+
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -69,14 +97,40 @@ export default class extends Controller {
             displayColors: false,
             callbacks: {
               title: (items) => {
-                const date = items[0].parsed.x
-                return date.toLocaleTimeString("ja-JP", {
-                  hour: "2-digit",
-                  minute: "2-digit"
-                })
+                const raw = items[0].parsed.x
+                const date = new Date(raw)
+
+                switch (this.unitValue) {
+                  case "quarter_hour":
+                  case "half_hour":
+                  case "hour":
+                    return date.toLocaleTimeString("ja-JP", {
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    })
+
+                  case "day":
+                  case "three_days":
+                  case "week":
+                    return date.toLocaleDateString("ja-JP", {
+                      month: "2-digit",
+                      day: "2-digit"
+                    })
+
+                  case "month":
+                    return date.toLocaleDateString("ja-JP", {
+                      year: "numeric",
+                      month: "2-digit"
+                    })
+
+                  default:
+                    return date.toLocaleString("ja-JP")
+                }
               },
               label: (context) => {
-                return `気分：${context.parsed.y}`
+                const value = context.parsed.y
+                const rounded = Math.round(value * 100) / 100
+                return `気分：${rounded}`
               }
             }
           }
@@ -84,18 +138,22 @@ export default class extends Controller {
         scales: {
           x: {
             type: "time",
+            min: data[0]?.x,
+            max: data[data.length - 1]?.x,
             time: {
-              unit: "hour",
-              stepSize: 2,
+              unit: time.unit,
+              stepSize: time.stepSize,
               displayFormats: {
-                hour: "HH:mm"
+                [time.unit]: time.format
               }
             },
             grid: {
               color: base300,
-              borderDash: [2, 2]
+              drawBorder: false,
+              borderDash: [3, 6]
             },
             ticks: {
+              source: "data",
               color: neutral,
               autoSkip: false,
               maxRotation: 0,
@@ -122,5 +180,48 @@ export default class extends Controller {
 
   disconnect() {
     if (this.chart) this.chart.destroy()
+  }
+
+  roundTime(date, unit, step) {
+    const time = new Date(date).getTime()
+
+    let stepMs
+
+    switch (unit) {
+      case "minute":
+        stepMs = step * 60 * 1000
+        break
+      case "hour":
+        stepMs = 60 * 60 * 1000
+        break
+      case "day":
+        stepMs = 24 * 60 * 60 * 1000
+        break
+      default:
+        return new Date(time)
+    }
+
+    return new Date(Math.floor(time / stepMs) * stepMs)
+  }
+
+  timeConfig() {
+    switch (this.unitValue) {
+      case "quarter_hour":
+        return { unit: "minute", stepSize: 15, format: "HH:mm" }
+      case "half_hour":
+        return { unit: "minute", stepSize: 30, format: "HH:mm" }
+      case "hour":
+        return { unit: "hour", stepSize: 1, format: "dd HH:mm" }
+      case "day":
+        return { unit: "day", stepSize: 1, format: "MM/dd" }
+      case "three_days":
+        return { unit: "day", stepSize: 3, format: "MM/dd" }
+      case "week":
+        return { unit: "week", stepSize: 1, format: "MM/dd" }
+      case "month":
+        return { unit: "month", stepSize: 1, format: "yyyy/MM" }
+      default:
+        return { unit: "day", stepSize: 1, format: "MM/dd" }
+    }
   }
 }

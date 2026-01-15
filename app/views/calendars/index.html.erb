@@ -1,108 +1,131 @@
 <div
-  class="p-4"
+  class="p-4 space-y-4"
   data-controller="calendar-swipe"
   data-calendar-swipe-prev-url-value="<%= calendars_path(date: @date.prev_month) %>"
   data-calendar-swipe-next-url-value="<%= calendars_path(date: @date.next_month) %>"
   data-action="touchstart->calendar-swipe#touchstart touchend->calendar-swipe#touchend"
 >
-  <div class="calendar-wrapper">
 
-    <!-- 月移動 -->
-    <div class="flex justify-between items-center mb-4">
-      <%= link_to "←", calendars_path(date: @date.prev_month), class: "bg-base-100/80 btn btn-sm" %>
+  <!-- ===== ヘッダー（カード外） ===== -->
+  <div class="flex justify-between items-center">
+    <%= link_to "←", calendars_path(date: @date.prev_month),
+      class: "btn btn-sm bg-base-100/80 backdrop-blur-sm shadow-sm backdrop-blur-sm" %>
 
-      <h2 class="text-lg font-bold">
-        <%= @date.strftime("%Y年 %m月") %>
-      </h2>
+    <h2 class="text-lg font-bold">
+      <%= @date.strftime("%Y年 %m月") %>
+    </h2>
 
-      <%= link_to "→", calendars_path(date: @date.next_month), class: "bg-base-100/80 btn btn-sm" %>
-    </div>
+    <%= link_to "→", calendars_path(date: @date.next_month),
+      class: "btn btn-sm bg-base-100/80 backdrop-blur-sm shadow-sm backdrop-blur-sm" %>
+  </div>
 
-    <!-- ▼ 曜日ヘッダー -->
-    <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold mb-2 text-base-content">
-      <% %w(月 火 水 木 金 土 日).each_with_index do |wday, i| %>
-        <% color =
-          case i
-          when 5 then "text-blue-500/70"
-          when 6 then "text-red-500/70"
-          else "text-base-content/70"
-          end
-        %>
-        <div class="<%= color %>"><%= wday %></div>
-      <% end %>
-    </div>
+  <!-- ===== カレンダーカード ===== -->
+  <div class="card bg-base-100/80 backdrop-blur-sm shadow-sm border-l-2 border-primary/60">
+    <div class="card-body p-4 space-y-2">
 
-    <!-- ▼ カレンダー本体 -->
-    <div class="grid grid-cols-7 gap-2">
+      <!-- 曜日 -->
+      <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold">
+        <% %w(月 火 水 木 金 土 日).each_with_index do |wday, i| %>
+          <% color =
+            case i
+            when 5 then "text-blue-500/70"
+            when 6 then "text-red-500/70"
+            else "text-base-content/70"
+            end
+          %>
+          <div class="<%= color %>"><%= wday %></div>
+        <% end %>
+      </div>
 
-      <% (@beginning..@ending).each do |day| %>
+      <!-- 日付グリッド -->
+      <div class="grid grid-cols-7 gap-2">
+        <% (@beginning..@ending).each do |day| %>
+          <% mood_logs_for_day  = @mood_logs_by_day[day]  || [] %>
+          <% habit_logs_for_day = @habit_logs_by_day[day] || [] %>
 
-        <% mood_logs_for_day  = @mood_logs_by_day[day]  || [] %>
-        <% habit_logs_for_day = @habit_logs_by_day[day] || [] %>
+          <% today_class =
+            day == Date.current ? "bg-primary/10 border-primary/60 text-primary font-semibold" : "border-primary"
+          %>
 
-        <% today_class =
-          if day == Date.current
-            "bg-primary/10 border-primary/60 text-primary font-semibold"
-          else
-            ""
-          end
-        %>
-
-        <%= link_to calendar_path(day.to_s),
+          <%= link_to calendar_path(day.to_s),
             data: { turbo_frame: "modal" },
             class: [
-              "bg-base-100/80 rounded-lg border p-2 h-14 block relative transition",
-              "hover:shadow-md hover:-translate-y-0.5",
+              "bg-base-100/80 backdrop-blur-sm rounded-lg border p-2 h-14 block relative transition hover:shadow-sm hover:-translate-y-0.5",
               today_class,
               ("opacity-30" if day.month != @date.month)
             ].compact.join(" ") do %>
 
-          <!-- 日付 -->
-          <div class="text-xs font-bold mb-1 ...">
-            <%= day.day %>
-          </div>
+            <div class="text-xs font-bold mb-1">
+              <%= day.day %>
+            </div>
 
-          <!-- ▼ ログ表示（記号 × 個数） -->
-          <div class="mt-1 space-y-0.5 text-[10px] leading-none">
+            <div class="space-y-0.5 text-[10px] leading-none text-center bottom-2 left-0 right-0 mx-auto">
+              <% if habit_logs_for_day.any? %>
+                <div class="flex items-center gap-1 text-primary">
+                  <span>●</span><span><%= habit_logs_for_day.size %></span>
+                </div>
+              <% end %>
 
-            <% mood_count = mood_logs_for_day.size %>
-            <% habit_count = habit_logs_for_day.size %>
-
-            <!-- 行動ログ（primary） -->
-            <% if habit_count > 0 %>
-              <div class="flex items-center gap-1 text-primary">
-                <span>●</span>
-                <span><%= habit_count %></span>
-              </div>
-            <% end %>
-
-            <!-- 気分ログ（secondary） -->
-            <% if mood_count > 0 %>
-              <div class="flex items-center gap-1 text-secondary">
-                <span>●</span>
-                <span><%= mood_count %></span>
-              </div>
-            <% end %>
-          </div>
+              <% if mood_logs_for_day.any? %>
+                <div class="flex items-center gap-1 text-secondary">
+                  <span>●</span><span><%= mood_logs_for_day.size %></span>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
         <% end %>
+      </div>
+
+      <!-- 凡例・操作ガイド -->
+      <div class="pt-2 border-t border-base-300 space-y-2">
+        <div class="flex justify-center gap-4 text-xs text-base-content/60">
+          <div class="flex items-center gap-1 text-primary">
+            <span>●</span><span>行動ログ</span>
+          </div>
+          <div class="flex items-center gap-1 text-secondary">
+            <span>●</span><span>気分ログ</span>
+          </div>
+        </div>
+
+        <div class="text-xs text-base-content/60 text-center">
+          <p>日付をタップすると、その日の記録を開けます。</p>
+          <p>スマホでは左右スワイプで前後の月へ移動できます。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ===== グラフカード ===== -->
+  <div class="card bg-base-100/60 backdrop-blur-sm shadow-sm border-l-2 border-primary/60">
+    <div class="card-body p-4">
+      <h3 class="text-sm font-semibold text-base-content/80">
+        <%= @date.strftime("%m月") %>の気分推移
+      </h3>
+
+      <% if @avg_mood.present? %>
+        <div class="text-sm font-semibold  mb-2">
+          <%= @avg_mood.round(2) %>
+          <span class="text-sm font-semibold">/ 5</span>
+        </div>
+      <% else %>
+        <div class="text-sm text-base-content/40 mt-1">
+          記録なし
+        </div>
       <% end %>
-    </div>
-    <!-- ▼ 凡例 -->
-    <div class="text-xs text-base-content/60 mt-4 flex justify-center gap-4">
 
-      <div class="flex items-center gap-1 text-primary">
-        <span>●</span><span>行動ログ</span>
+      <div
+        class="w-full h-50"
+        data-controller="mood-graph"
+        data-mood-graph-values-value="<%= @mood_graph[:points].to_json %>"
+        data-mood-graph-unit-value="<%= @mood_graph[:unit] %>"
+      >
+        <canvas class="w-full h-full"></canvas>
       </div>
 
-      <div class="flex items-center gap-1 text-secondary">
-        <span>●</span><span>気分ログ</span>
+      <!-- フッター -->
+      <div class="text-xs text-base-content/40">
+        時間ごとの気分の流れ
       </div>
-
-    </div>
-    <!-- ▼ 操作ガイド（控えめに表示） -->
-    <div class="text-xs text-base-content/60 mb-3 text-center">
-      <p>日付をタップすると、その日の記録を開けます。</p>
-      <p>スマホでは左右スワイプで前後の月へ移動できます。</p>
     </div>
   </div>
 </div>

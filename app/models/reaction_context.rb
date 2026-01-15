@@ -4,7 +4,7 @@ class ReactionContext
               :habit_logs,
               :habits,
               :avg_mood,
-              :mood_graph_values,
+              :mood_graph,
               :summaries
 
   def initialize(user:, date:)
@@ -45,9 +45,7 @@ class ReactionContext
       @user.mood_logs
            .includes(:mood)
            .for_date(@date)
-
-    aggregation = TimeSeriesAggregation.new(logs_scope).call
-    @mood_graph_values = aggregation[:points]
+    @mood_graph = TimeSeriesAggregation.new(logs_scope).call
   end
 
   def build_habits
@@ -88,7 +86,6 @@ class ReactionContext
         frequency_habits = @habits.public_send(freq) || Habit.none
         logs_by_habit = logs_by_frequency[freq]
 
-        #
         progresses =
           frequency_habits.map do |habit|
             HabitProgress.new(
