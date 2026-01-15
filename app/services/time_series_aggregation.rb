@@ -1,8 +1,7 @@
 class TimeSeriesAggregation
-  def initialize(scope, force_unit: nil, range: nil)
+  def initialize(scope, force_unit: nil)
     @scope = scope
     @force_unit = force_unit
-    @range = range
   end
 
   # 返り値: { time => average_score, ... }

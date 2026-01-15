@@ -18,13 +18,12 @@ class CalendarsController < ApplicationController
     @mood_logs_by_day  = mood_logs.group_by { |ml| ml.recorded_at.to_date }
     @habit_logs_by_day = habit_logs.group_by { |hl| hl.started_at.to_date }
 
-    range = @date.beginning_of_month..@date.end_of_month
     @mood_graph =
       TimeSeriesAggregation.new(
         mood_logs,
-        force_unit: :day,
-        range: range
+        force_unit: :day
       ).call
+
     @avg_mood =
       mood_logs
         .average("moods.score")
