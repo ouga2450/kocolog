@@ -30,6 +30,7 @@ class ReactionContext
            .includes(:mood)
            .for_date(@date)
            .recent
+           .order(:recorded_at)
   end
 
   def build_habit_logs
@@ -38,6 +39,7 @@ class ReactionContext
            .includes(habit: [ :goal, :category ])
            .for_date(@date)
            .recent
+           .order(:started_at)
   end
 
   def build_mood_graph
