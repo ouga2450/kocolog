@@ -7,13 +7,13 @@ class HomeController < ApplicationController
       current_user.habit_logs
         .for_today
         .includes(habit: :category)
-        .order(started_at: :desc)
+        .recent
 
     mood_logs =
       current_user.mood_logs
         .for_today
         .includes(:mood, :feeling)
-        .order(recorded_at: :desc)
+        .recent
 
     @moods = Mood.order(:score)
 
