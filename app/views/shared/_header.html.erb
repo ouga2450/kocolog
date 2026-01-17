@@ -2,7 +2,7 @@
   <div class="w-full max-w-lg mx-auto flex items-center justify-between px-4">
 
     <!-- 左側・ロゴ -->
-    <%= link_to root_path, class: "font-bold text-xl tracking-wide text-primary" do %>
+    <%= link_to top_path, class: "font-bold text-xl tracking-wide text-primary" do %>
       koco<span class="text-accent">log</span>
     <% end %>
 
@@ -34,7 +34,7 @@
         <input id="nav-menu-toggle" type="checkbox" class="hidden peer/nav" />
 
         <label for="nav-menu-toggle"
-               class="btn btn-circle btn-ghost swap swap-rotate peer-checked/nav:swap-active">
+               class="btn btn-circle btn-ghost swap peer-checked/nav:swap-active">
           <%= heroicon "bars-3", options: { class: "w-6 h-6 swap-off" } %>
           <%= heroicon "x-mark", options: { class: "w-6 h-6 swap-on" } %>
         </label>
