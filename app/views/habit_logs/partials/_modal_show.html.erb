@@ -90,7 +90,7 @@
         <p class="font-semibold text-base-content/80">実行後の気分</p>
         <p class="text-base-content">
           <%= safe_join(
-            [emoji_for_mood(before.mood), jp_label_for_mood(before.mood)].compact,
+            [emoji_for_mood(after.mood), jp_label_for_mood(after.mood)].compact,
             " "
           ) %>
           <% if after.feeling.present? %>
