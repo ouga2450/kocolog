@@ -105,5 +105,7 @@ jobs:
         if: failure() && matrix.suite == 'system'
         with:
           name: screenshots
-          path: ${{ github.workspace }}/tmp/screenshots
+          path: |
+            ${{ github.workspace }}/tmp/screenshots
+            ${{ github.workspace }}/tmp/capybara
           if-no-files-found: ignore
