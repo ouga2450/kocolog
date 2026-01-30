@@ -1,3 +1,5 @@
+Capybara.server_port = 3001  # 4444以外ならOK（0ならランダム）
+
 Capybara.register_driver :remote_chrome do |app|
   options = Selenium::WebDriver::Chrome::Options.new
   options.add_argument('no-sandbox')
