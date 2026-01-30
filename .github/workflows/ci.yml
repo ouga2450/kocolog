@@ -78,6 +78,13 @@ jobs:
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare
 
+      - name: Precompile assets
+        if: matrix.suite == 'system'
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+        run: bin/rails assets:precompile
+
       - name: Run RSpec (models)
         if: matrix.suite == 'models'
         env:
