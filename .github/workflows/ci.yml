@@ -74,7 +74,7 @@ jobs:
       - name: Prepare DB
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/kocolog_test
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare
 
