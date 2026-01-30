@@ -68,7 +68,7 @@ RSpec.configure do |config|
   # config.infer_spec_type_from_file_location!
   config.include FactoryBot::Syntax::Methods
   config.include LoginMacros
-  
+
   config.before(:each, type: :system) do
     driven_by :remote_chrome
     Capybara.server_host = IPSocket.getaddress(Socket.gethostname)
